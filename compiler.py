@@ -1,29 +1,17 @@
 import sys
 import vampire as lang
 
-def readFile(filename):
-    with open(filename, "r") as io:
-        text = io.read()
-    return text
+# try:
+while True:
+    enter = input("vshell $ ")
+    if enter == "quit":
+        sys.exit(0)
 
-def writeFile(filename, text):
-    with open(filename, "w", encoding="utf-8") as io:
-        io.write(text)
-def run():
-    filename = sys.argv[1]
-    fileext = ".my"
-    outfile = filename.replace(fileext, ".py")
-    text = readFile(filename)
-    result, error = lang.run(filename, text)
+    result, error = lang.run("shell.vam", enter)
     if error :
-        print("Compilation failed:\a")
-        print("")
         print(error)
     else:
-        writeFile(outfile, result.statements)
-# try:
-if len(sys.argv) > 1:
-    if len(sys.argv) == 2 : run()
+        print(result.value)
 
             
 # except Exception as e:
