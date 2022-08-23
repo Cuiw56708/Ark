@@ -43,7 +43,6 @@ FILENAME = ""
 TEXT = ""
 
 imports = ""
-statements = ""
 
 
 def run (filename, text):
@@ -63,7 +62,6 @@ def run (filename, text):
     if check(abstract_syntax_tree):
         return None, abstract_syntax_tree.error
     resp = cal.cal(abstract_syntax_tree.node, context)
-    resp.statements = statements
     
     return resp, resp.error
 
@@ -170,9 +168,6 @@ class Calculator:
         if check(response):
             return response
 
-        global statements
-        statements += f"{key}={value};"
-
         context.symbols.set(key, value)
         
         return response.success(value)
@@ -187,9 +182,6 @@ class Calculator:
             return response.failure(RuntimeException(node.start, node.end, "RuntimeException", f"{key} is not defined", context))
         
         value = value.clone().locate(node.start, node.end)
-
-        global statements
-        statements += f"print({key});"
 
         return response.success(value)
     def cal_Number(self, node, context):
@@ -344,13 +336,6 @@ class Lexer :
                 tokens.append(self.numbers())
             elif self.current in VAR_PTN :
                 tokens.append(self.id())
-            elif self.current == "=":
-                tokens.append(Token(EQ, start=self.position))
-                self.step()
-            # elif self.current == "<":
-            #     tokens.append(self.lt())
-            # elif self.current == ">":
-            #     tokens.append(self.gt())
                     
             elif self.current == "%":
                 tokens.append(Token(MOD, start=self.position))
@@ -381,6 +366,12 @@ class Lexer :
                 if error:
                     return [], error
                 tokens.append(token)
+            elif self.current == "=":
+                tokens.append(self.equals())
+            elif self.current == "<":
+                tokens.append(self.lt())
+            elif self.current == ">":
+                tokens.append(self.gt())
             else:
                 start = self.position.clone()
                 char = self.current
@@ -389,6 +380,43 @@ class Lexer :
         tokens.append(Token(END, start = self.position))
 
         return tokens,None
+
+    def lt(self):
+        ttype = LT
+        start = self.position.clone()
+        self.step()
+        
+        if self.current == "=":
+            self.step()
+            ttype = LTE
+
+        end = self.position
+        return Token(type=ttype, start=start, end=end)
+
+    def gt(self):
+        ttype = GT
+        start = self.position.clone()
+        self.step()
+        
+        if self.current == "=":
+            self.step()
+            ttype = GTE
+
+        end = self.position
+        return Token(type=ttype, start=start, end=end)
+
+    def equals(self):
+        ttype = EQ
+        start = self.position.clone()
+        self.step()
+        
+        if self.current == "=":
+            self.step()
+            ttype = EE
+
+        end = self.position
+        return Token(type=ttype, start=start, end=end)
+
     def not_equals(self):
         start = self.position.clone()
         self.step()
@@ -494,7 +522,6 @@ class RuntimeResponse(Response):
     def __init__(self) -> None:
         self.error = None
         self.value = None
-        self.statements = None
 
     def response(self, response):
 
@@ -552,7 +579,7 @@ class Parser:
         l = response.response(get())
         if check(response): return response
 
-        while self.current.type in operation_tokens:
+        while self.current.type in operation_tokens or (self.current.type,self.current.value) in operation_tokens:
             o = self.current
             response.response(self.step())
             r = response.response(get())
@@ -720,7 +747,6 @@ class NoValue(Digit):
 
 global_data = DataTable()
 global_data.set("nov", NoValue())
-
 
 
 
