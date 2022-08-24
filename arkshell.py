@@ -1,5 +1,5 @@
 import sys
-import vampire as lang
+import ark as lang
 
 # try:
 while True:
