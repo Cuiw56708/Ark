@@ -99,6 +99,7 @@ def arrow(text, poss, pose):
 
     return "\a" + result.replace("\t", "")
 class Bool:
+    # boolean
     def __init__(self, value) -> None:
         self.value = value
         self.setcontext()
