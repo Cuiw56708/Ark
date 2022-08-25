@@ -1,13 +1,13 @@
 import sys
-import ur as lang
+import intrepreter as lang
 
 # try:
 while True:
-    enter = input("vshell $ ")
+    enter = input("arkShell $ ")
     if enter == "quit":
         sys.exit(0)
 
-    result, error = lang.run("shell.vam", enter)
+    result, error = lang.run("shell.ark", enter)
     if error :
         print(error)
     else:
