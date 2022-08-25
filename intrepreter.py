@@ -46,6 +46,11 @@ imports = ""
 
 
 def run (filename, text):
+    """
+        RUN THE CODE <text> using the <filename> file name.
+        arguments:
+        filename - file name of the code file
+    """
     lex = Lexer(filename, text)
     tokens, error = lex.tokens()
 
@@ -70,6 +75,13 @@ def check(obj):
         return True
     return False
 def arrow(text, poss, pose):
+    """
+        Show error arrows.
+        arguments:
+        text - the error text
+        poss - start position
+        pose - end position
+    """
     result = ''
     start = max(text.rfind('\n', 0, poss.index), 0)
     end = text.find('\n', start + 1)
